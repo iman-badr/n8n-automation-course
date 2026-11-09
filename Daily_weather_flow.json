@@ -1,0 +1,295 @@
+{
+  "name": "Daily_weather_flow",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://api.open-meteo.com/v1/forecast",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "latitude",
+              "value": "48.772229"
+            },
+            {
+              "name": "longitude",
+              "value": "11.444253"
+            },
+            {
+              "name": "daily",
+              "value": "temperature_2m_max,precipitation_sum"
+            },
+            {
+              "name": "timezone",
+              "value": "auto"
+            },
+            {
+              "name": "forecast_days",
+              "value": "1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        -480,
+        -144
+      ],
+      "id": "73595628-6945-4919-b17c-ea7e06e7ddef",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1dcc39e1-dbc7-4f15-9186-a656a3d6f305",
+              "name": "max_temp",
+              "value": "={{ $json.daily.temperature_2m_max }}",
+              "type": "number"
+            },
+            {
+              "id": "1ea5e674-776b-41c6-bef1-46ad6ae96119",
+              "name": "rain",
+              "value": "={{ $json.daily.precipitation_sum }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -336,
+        -144
+      ],
+      "id": "400c674d-f07b-4f33-9632-1722d65360c9",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "bc72d888-88b5-467b-8ac0-231e9f26fa97",
+              "leftValue": "={{ $json.rain }}",
+              "rightValue": 1,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        -224,
+        0
+      ],
+      "id": "6184a2c7-0996-4229-846f-ce3e9a6ca49f",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "60057043-17b7-44ef-b5d0-aad11ec5f888",
+              "name": "message",
+              "value": "=Take an umbrella! Rain expected: {{ $json.rain }} mm, max {{ $json.max_temp }} °C.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        0,
+        -96
+      ],
+      "id": "c875a59f-2e05-40c0-b43a-a5ce723b1f73",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1f0ae2bc-d5ec-4a5d-8af5-8b446153bb11",
+              "name": "message",
+              "value": "=Dry day ahead, max {{ $json.max_temp }} °C. Enjoy!",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        0,
+        96
+      ],
+      "id": "d46e09b5-836a-45ad-b0fa-594cf327aec8",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 6
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -672,
+        -128
+      ],
+      "id": "8ee9c4b0-08a4-4105-a3ee-46924791a032",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://ntfy.sh/weather-iman-48x7q2",
+        "sendBody": true,
+        "contentType": "raw",
+        "body": "={{ $json.message }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        160,
+        96
+      ],
+      "id": "4feec42d-6a22-4ef3-9c70-49bb9224a011",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://ntfy.sh/weather-iman-48x7q2",
+        "sendBody": true,
+        "contentType": "raw",
+        "body": "={{ $json.message }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        160,
+        -96
+      ],
+      "id": "cc2a5e06-3b32-44e1-8044-6c4c5e6ee6ec",
+      "name": "HTTP Request2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "f0403471-7db6-4649-b790-e1fda0dc9cf6",
+  "meta": {
+    "instanceId": "5d92da2e094ac426dd712e03702de213ffd6b415944dc426ad0f01b18c9760c1"
+  },
+  "nodeGroups": [],
+  "id": "dNNiampuMr9nHjYu",
+  "tags": []
+}
