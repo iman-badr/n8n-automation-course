@@ -1,0 +1,404 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "BMI",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Weight",
+              "fieldType": "number",
+              "placeholder": "kg",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Height",
+              "fieldType": "number",
+              "placeholder": "cm",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        -464,
+        -48
+      ],
+      "id": "16f1316a-0bff-4f09-9e3a-7dbaec1ff583",
+      "name": "On form submission",
+      "webhookId": "cd3f292a-c990-47a5-9379-206efef18246"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cb89c46a-0319-48d2-8bfe-a1e58fe3997e",
+              "name": "Weight",
+              "value": "={{ $json.Weight }}",
+              "type": "number"
+            },
+            {
+              "id": "013e168b-285f-4b46-a54c-a49906027f62",
+              "name": "Height",
+              "value": "={{ $json.Height }}",
+              "type": "number"
+            },
+            {
+              "id": "c7336afb-317f-4804-8d07-bb46fdf6892e",
+              "name": "bmi",
+              "value": "={{ Math.round($json.Weight /($json.Height/100)**2) }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -240,
+        -48
+      ],
+      "id": "7182e37a-01f6-4f6e-a69a-6b5a56b22c7d",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.bmi }}",
+                    "rightValue": 18.5,
+                    "operator": {
+                      "type": "number",
+                      "operation": "lt"
+                    },
+                    "id": "d9c6ccbc-933a-4009-9e4b-70e666a694ab"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": ""
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "id": "fccf72ad-c258-4c12-aa37-95b97f5dd753",
+                    "leftValue": "={{ $json.bmi }}",
+                    "rightValue": 25,
+                    "operator": {
+                      "type": "number",
+                      "operation": "lt"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": "={{ false }}"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "id": "12b110de-45be-4b56-8722-d2a62f1a8134",
+                    "leftValue": "={{ $json.bmi }}",
+                    "rightValue": 30,
+                    "operator": {
+                      "type": "number",
+                      "operation": "lt"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "id": "ebe7a530-bb20-4d7a-9554-5be1c4d5ebe9",
+                    "leftValue": "={{ $json.bmi }}",
+                    "rightValue": 30,
+                    "operator": {
+                      "type": "number",
+                      "operation": "gt"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.5,
+      "position": [
+        -16,
+        -48
+      ],
+      "id": "d5501cc3-d667-45c1-b6f0-461378342481",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "887195c4-cfb5-4edc-ba83-0ade4385d311",
+              "name": "category",
+              "value": "underweight",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        192,
+        -192
+      ],
+      "id": "645d2447-8934-407e-8170-6cb68954d391",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "13739be7-3715-4d07-80d5-c161e5be6923",
+              "name": "category",
+              "value": "Normal weight",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        192,
+        -64
+      ],
+      "id": "46e702ee-2e14-4066-9775-bdec02d6e9d1",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8643c448-db70-45d9-8194-f42f65b9f540",
+              "name": "category",
+              "value": "overweight",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        192,
+        64
+      ],
+      "id": "3f23f0b3-be2c-487a-8d50-3ce95bebe08f",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8643c448-db70-45d9-8194-f42f65b9f540",
+              "name": "category",
+              "value": "obesity",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        192,
+        208
+      ],
+      "id": "1142e410-70e8-4f49-9bb3-6dcebb5085e3",
+      "name": "Edit Fields4"
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "Your result",
+        "completionMessage": "=BMI: {{ $json.bmi }} ({{ $json.category }}). For information only, not a medical assessment.",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        416,
+        -192
+      ],
+      "id": "a23d3372-2a93-4f6e-8a5f-872901db724b",
+      "name": "Form",
+      "webhookId": "0cc735e8-747a-4a8d-9c63-c5eba8f11710"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields4": {
+      "main": [
+        [
+          {
+            "node": "Form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "c4b7e443-cb04-4e0c-8457-a6ec0327f83f",
+  "meta": {
+    "instanceId": "bf51f6188e26b311748d12b71b0ed87babf80caaff58f3c24ac30ada450b5e7f"
+  },
+  "nodeGroups": [],
+  "id": "RduWrsBVFRuZcail",
+  "tags": []
+}
